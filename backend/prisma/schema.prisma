@@ -1,0 +1,103 @@
+// CodeCritic - Prisma Schema
+// Matches the ER diagram: User, Submission, ReviewCriteria, Review, CriteriaRating
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// -----------------------------
+// Enums
+// -----------------------------
+
+enum SubmissionStatus {
+  Pending
+  Reviewed
+}
+
+// -----------------------------
+// Models
+// -----------------------------
+
+model User {
+  id         Int      @id @default(autoincrement())
+  clerkId    String   @unique
+  username   String   @unique
+  bio        String?
+  techStack  String[]
+  githubLink String?
+  karma      Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  // Relations
+  submissions Submission[] // submissions this user has posted
+  reviews     Review[]     // reviews this user has written (as reviewer)
+}
+
+model Submission {
+  id          Int              @id @default(autoincrement())
+  userId      Int
+  title       String
+  description String
+  githubUrl   String
+  techTags    String[]
+  status      SubmissionStatus @default(Pending)
+  createdAt   DateTime         @default(now())
+
+  // Relations
+  user     User             @relation(fields: [userId], references: [id])
+  criteria ReviewCriteria[] // 1 to 5 criteria defined by the submitter
+  reviews  Review[]         // reviews received on this submission
+
+  @@index([userId])
+}
+
+model ReviewCriteria {
+  id           Int    @id @default(autoincrement())
+  submissionId Int
+  label        String
+  order        Int?
+
+  // Relations
+  submission Submission       @relation(fields: [submissionId], references: [id])
+  ratings    CriteriaRating[] // ratings given against this criterion across reviews
+
+  @@index([submissionId])
+}
+
+model Review {
+  id            Int      @id @default(autoincrement())
+  submissionId  Int
+  reviewerId    Int
+  strengths     String
+  improvements  String
+  resourceLinks String[]
+  createdAt     DateTime @default(now())
+
+  // Relations
+  submission Submission       @relation(fields: [submissionId], references: [id])
+  reviewer   User             @relation(fields: [reviewerId], references: [id])
+  ratings    CriteriaRating[] // one rating per criterion defined on the submission
+
+  @@index([submissionId])
+  @@index([reviewerId])
+}
+
+model CriteriaRating {
+  id         Int @id @default(autoincrement())
+  reviewId   Int
+  criteriaId Int
+  rating     Int // expected range 1-10, enforce in application/API layer
+
+  // Relations
+  review   Review         @relation(fields: [reviewId], references: [id])
+  criteria ReviewCriteria @relation(fields: [criteriaId], references: [id])
+
+  @@index([reviewId])
+  @@index([criteriaId])
+}
