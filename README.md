@@ -29,6 +29,7 @@ Stack:
 - **Tailwind CSS** for styling
 - **Shadcn/UI** for components (`npx shadcn@latest add <component>` to add more)
 - **Zustand** for client state (see `src/store/useCounterStore.ts` for an example)
+- **Clerk** for authentication (see below)
 
 Other commands:
 ```bash
@@ -36,6 +37,22 @@ npm run build   # production build
 npm run start   # run the production build
 npm run lint    # eslint
 ```
+
+### Authentication (Clerk)
+
+Sign-in/sign-up live at `/sign-in` and `/sign-up` (`src/app/sign-in`, `src/app/sign-up`). Route protection is handled in `src/proxy.ts` — Next.js 16 renamed `middleware.ts` to `proxy.ts` (same mechanism, new filename); it currently protects `/dashboard(.*)`. To protect more routes, add them to the `isProtectedRoute` matcher there.
+
+`src/components/sync-user.tsx` calls the backend's `POST /users/sync` once per session after sign-in (mounted on the dashboard page) so a matching `User` row exists in Postgres.
+
+Env vars go in `frontend/.env.local` (see `.env.local.example`):
+
+| Variable | Description |
+|----------|--------------|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key |
+| `CLERK_SECRET_KEY` | Clerk secret key (server-side only) |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_URL` / `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | Path to the sign-in/sign-up pages |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` / `..._SIGN_UP_FALLBACK_REDIRECT_URL` | Where to land after auth (`/dashboard`) |
+| `NEXT_PUBLIC_BACKEND_URL` | Base URL of the Express API (used by `sync-user.tsx`) |
 
 ## Backend setup (`/backend`)
 
@@ -60,6 +77,7 @@ Stack:
   npx prisma migrate dev   # create/apply a migration
   npx prisma generate      # regenerate the Prisma client
   ```
+- **Clerk** (`@clerk/express`) for auth — `clerkMiddleware()` runs globally in `src/app.ts`; `POST /users/sync` (`src/routes/users.ts`) reads the verified `userId` via `getAuth(req)`, fetches the full profile from Clerk, and upserts a matching `User` row by `clerkId`. Requires an `Authorization: Bearer <session token>` header; returns `401` without one.
 
 Other commands:
 ```bash
@@ -73,6 +91,8 @@ npm run start   # run the compiled server (dist/index.js)
 |----------------|---------------------------------------|
 | `PORT`         | Port the Express server listens on (default `4000`) |
 | `DATABASE_URL` | PostgreSQL connection string used by Prisma |
+| `CLERK_PUBLISHABLE_KEY` | Clerk publishable key |
+| `CLERK_SECRET_KEY` | Clerk secret key |
 
 ## Notes
 

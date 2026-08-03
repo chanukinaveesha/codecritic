@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,7 +16,7 @@ export default function Home() {
   const { count, increment, decrement, reset } = useCounterStore();
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+    <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-zinc-50 font-sans dark:bg-black">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Frontend scaffold</CardTitle>
@@ -36,6 +37,9 @@ export default function Home() {
           </Button>
         </CardFooter>
       </Card>
+      <Button asChild variant="link">
+        <Link href="/dashboard">Go to dashboard →</Link>
+      </Button>
     </div>
   );
 }
