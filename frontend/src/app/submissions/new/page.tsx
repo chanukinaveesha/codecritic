@@ -83,7 +83,7 @@ export default function NewSubmissionPage(){
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className="rounded-md border px-3 py-2 text-sm bg-transparent border-input"
           />
         </div>
 
@@ -95,7 +95,7 @@ export default function NewSubmissionPage(){
             rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className="rounded-md border px-3 py-2 text-sm bg-transparent border-input"
           />
         </div>
 
@@ -107,7 +107,7 @@ export default function NewSubmissionPage(){
             required
             value={githubUrl}
             onChange={(e) => setGithubUrl(e.target.value)}
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className="rounded-md border border-input px-3 py-2 text-sm bg-transparent"
           />
         </div>
 
@@ -118,7 +118,7 @@ export default function NewSubmissionPage(){
             value={techTags}
             onChange={(e) => setTechTags(e.target.value)}
             placeholder="typescript, node"
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className="rounded-md border border-input px-3 py-2 text-sm bg-transparent"
           />
         </div>
 
@@ -131,7 +131,7 @@ export default function NewSubmissionPage(){
                 value={c}
                 onChange={(e) => updateCriterion(i, e.target.value)}
                 placeholder={`Criterion ${i + 1}`}
-                className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+                className="flex-1 rounded-md border border-input px-3 py-2 text-sm bg-transparent"
               />
               <Button type="button" variant="ghost" onClick={() => removeCriterion(i)} disabled={criteria.length <= 1}>
                 Remove
@@ -143,7 +143,7 @@ export default function NewSubmissionPage(){
           </Button>
         </div>
 
-        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+        {error && <p className="text-sm text-destructive">{error}</p>}
 
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Create submission"}

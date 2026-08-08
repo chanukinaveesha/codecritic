@@ -38,7 +38,7 @@ export default async function SubmissionDetailPage({
                 <p className="mt-1 text-zinc-600 dark:text-zinc-400">
                     {submission.description}
                 </p>
-                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <span>{submission.status}</span>
                     {submission.techTags.map((t) => (
                         <span key={t} className="rounded-full bg-zinc-100 px-2 py-0.5 dark:bg-zinc-800">
@@ -56,7 +56,7 @@ export default async function SubmissionDetailPage({
             </a>
         </div><section>
                 <h2 className="text-lg font-semibold">Review criteria</h2>
-                <ul className="mt-2 list-disc pl-5 text-sm text-zinc-600 dark:text-zinc-400">
+                <ul className="mt-2 list-disc pl-5 text-muted-foreground">
                     {submission.criteria.map((c) => (
                         <li key={c.id}>{c.label}</li>
                     ))}
@@ -65,19 +65,19 @@ export default async function SubmissionDetailPage({
                 <h2 className="text-lg font-semibold">Reviews ({submission.reviews.length})</h2>
                 <div className="mt-2 flex flex-col gap-4">
                     {submission.reviews.length === 0 && (
-                        <p className="text-sm text-zinc-500">No reviews yet.</p>
+                        <p className="text-sm text-muted-foreground">No reviews yet.</p>
                     )}
                     {submission.reviews.map((review) => (
-                        <div key={review.id} className="rounded-md border border-zinc-200 p-4 dark:border-zinc-800">
+                        <div key={review.id} className="rounded-md border border-border bg-card">
                             <div className="flex items-center justify-between text-sm font-medium">
                                 <span>{review.reviewer.username}</span>
-                                <span className="text-zinc-500">karma: {review.reviewer.karma}</span>
+                                <span className="text-muted-foreground">karma: {review.reviewer.karma}</span>
                             </div>
-                            <div className="mt-2 flex flex-wrap gap-2 text-xs text-zinc-500">
+                            <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
                                 {review.ratings.map((r) => {
                                     const criterion = submission.criteria.find((c) => c.id === r.criteriaId);
                                     return (
-                                        <span key={r.id} className="rounded bg-zinc-100 px-2 py-0.5 dark:bg-zinc-800">
+                                        <span key={r.id} className="rounded-md px-2 py-0.5 bg-muted">
                                             {criterion?.label ?? "criterion"}: {r.rating}/10
                                         </span>
                                     );
@@ -92,7 +92,7 @@ export default async function SubmissionDetailPage({
                                 {review.improvements}
                             </p>
                             {review.resourceLinks.length > 0 && (
-                                <ul className="mt-2 list-disc pl-5 text-sm text-blue-600 dark:text-blue-400">
+                                <ul className="mt-2 list-disc pl-5 text-sm text-primary">
                                     {review.resourceLinks.map((link) => (
                                         <li key={link}>
                                             <a href={link} target="_blank" rel="noreferrer" className="underline">
@@ -107,7 +107,7 @@ export default async function SubmissionDetailPage({
                 </div>
             </section>
             
-            <Link href="/" className="text-sm text-zinc-500 underline">
+            <Link href="/" className="text-sm text-muted-foreground underline">
                 ← Back to feed
             </Link>
     </div>
