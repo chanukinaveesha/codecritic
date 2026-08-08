@@ -1,6 +1,7 @@
-import express, { Application } from "express";
-import cors from "cors";
 import { clerkMiddleware } from "@clerk/express";
+import cors from "cors";
+import express, { Application } from "express";
+import { submissionRouter } from "./routes/submissions";
 import { usersRouter } from "./routes/users";
 
 export function createApp(): Application {
@@ -15,6 +16,7 @@ export function createApp(): Application {
   });
 
   app.use("/users", usersRouter);
+  app.use("/submissions", submissionRouter);
 
   return app;
 }
