@@ -93,3 +93,27 @@ usersRouter.patch("/me", async (req, res) => {
 
   res.status(200).json(updated);
 });
+
+
+
+
+usersRouter.get("/:username/reviews-given", async (req, res) => {
+  const { username } = req.params;
+
+  const user = await prisma.user.findUnique({ where: { username } });
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  const reviews = await prisma.review.findMany({
+    where: { reviewerId: user.id },
+    include: {
+      submission: { select: { id: true, title: true } },
+      ratings: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  res.status(200).json(reviews);
+});
