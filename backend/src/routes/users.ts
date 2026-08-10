@@ -32,6 +32,9 @@ usersRouter.post("/sync", async (req, res) => {
   res.status(200).json(user);
 });
 
+
+
+
 usersRouter.get("/:username", async (req, res) => {
   const { username } = req.params;
 
@@ -65,4 +68,28 @@ usersRouter.get("/:username", async (req, res) => {
     reviewsGivenCount: user.reviews.length,
 
   });
+});
+
+
+
+
+usersRouter.patch("/me", async (req, res) => {
+  const { userId: clerkId } = getAuth(req);
+  if (!clerkId) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  const { bio, techStack, githubLink } = req.body;
+
+  const updated = await prisma.user.update({
+    where: { clerkId },
+    data:{
+      ...(bio !== undefined ? { bio } : {}),
+      ...(techStack !== undefined ? { techStack } : {}),
+      ...(githubLink !== undefined ? { githubLink } : {}),
+    },
+  });
+
+  res.status(200).json(updated);
 });
