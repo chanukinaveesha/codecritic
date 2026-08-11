@@ -80,7 +80,7 @@ export default async function Home({
                 {s.techTags.map((t) => (
                   <span
                     key={t}
-                    className="rounded-full bg-zinc-100 px-2 py-0.5 dark:bg-zinc-800"
+                    className="rounded-md bg-white/5 px-2 py-0.5 text-muted-foreground"
                   >
                     {t}
                   </span>
