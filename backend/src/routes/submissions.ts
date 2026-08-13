@@ -65,6 +65,7 @@ submissionRouter.post("/", async (req, res) => {
 const feedQuerySchema = z.object({
     tech: z.string().trim().toLowerCase().min(1).optional(),
     search: z.string().trim().min(1).optional(),
+    username: z.string().trim().min(1).optional(),
 })
 
 submissionRouter.get("/feed", async (req, res) => {
@@ -74,7 +75,7 @@ submissionRouter.get("/feed", async (req, res) => {
         return res.status(400).json({ error: parsedQuery.error.flatten() });
     }
     
-    const { tech, search } = parsedQuery.data;
+    const { tech, search, username } = parsedQuery.data;
 
     const submissions = await prisma.submission.findMany({
         where:{
@@ -83,6 +84,7 @@ submissionRouter.get("/feed", async (req, res) => {
                 { title: { contains: search, mode: "insensitive" } },
                 { description: { contains: search, mode: "insensitive" } },
             ] } : {}),
+            ...(username ? { user: { username } } : {}),
         },
         orderBy: { createdAt: "desc" },
         include:{
