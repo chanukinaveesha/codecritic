@@ -1,6 +1,12 @@
+export interface SubmissionAuthor {
+  id: number;
+  username: string;
+}
+
 export interface SubmissionBase{
     id: number;
     userId: number;
+    user: SubmissionAuthor;
     title: string;
     description:string
     githubUrl: string;
@@ -37,8 +43,8 @@ export interface Review{
     id: number;
     submissionId: number;
     reviewerId: number;
-    strengths: number;
-    improvements: number;
+    strengths: string;
+    improvements: string;
     resourceLinks: string[];
     createdAt: string;
     reviewer: Reviewer;

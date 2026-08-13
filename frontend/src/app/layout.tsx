@@ -1,6 +1,8 @@
+import { Button } from "@/components/ui/button";
 import { ClerkProvider, Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 
 const inter = Inter({
@@ -29,22 +31,55 @@ export default function RootLayout({
         lang="en"
         className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
       >
-        <body className="min-h-full flex flex-col">
-          <header className="flex items-center justify-end gap-4 border-b border-zinc-200 p-4 dark:border-zinc-800">
-            <Show
-              when="signed-in"
-              fallback={
-                <>
-                  <SignInButton mode="modal" />
-                  <SignUpButton mode="modal" />
-                </>
-              }
-            >
-              <UserButton />
-            </Show>
+       
+       <body className="min-h-full">
+        <div className="flex min-h-screen flex-col">
+          <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-6">
+            <Link href="/" className="text-lg font-semibold text-foreground">
+              CodeCritic
+            </Link>
+
+            <div className="flex items-center gap-3">
+              <Button asChild size="sm">
+                <Link href="/submissions/new">New submission</Link>
+              </Button>
+
+              <Show
+                when="signed-in"
+                fallback={
+                  <div className="flex gap-2">
+                    <SignInButton mode="modal">
+                      <Button variant="ghost" size="sm">
+                        Sign in
+                      </Button>
+                    </SignInButton>
+                    <SignUpButton mode="modal">
+                      <Button size="sm">Sign up</Button>
+                    </SignUpButton>
+                  </div>
+                }
+              >
+                <UserButton />
+              </Show>
+            </div>
           </header>
-          {children}
-        </body>
+
+          <div className="grid flex-1 grid-cols-[220px_1fr]">
+            <aside className="border-r border-sidebar-border bg-sidebar px-4 py-6">
+              <nav className="flex flex-col gap-1">
+                <Link
+                  href="/"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent"
+                >
+                  Feed
+                </Link>
+              </nav>
+            </aside>
+
+            <main className="flex flex-col">{children}</main>
+          </div>
+        </div>
+      </body>
       </html>
     </ClerkProvider>
   );

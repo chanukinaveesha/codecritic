@@ -1,3 +1,4 @@
+import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -6,7 +7,11 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
+import { UserAvatar } from "@/components/user-avatar";
+import { formatRelativeTime } from "@/lib/format";
+import { mockSubmissions } from "@/lib/mock-data";
 import { SubmissionSummary } from "@/lib/types";
+import { ListChecks, MessageSquare } from "lucide-react";
 import Link from "next/link";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -25,13 +30,25 @@ async function getSubmissions(params: {tech?: string; search?: string}) {
   return res.json() as Promise<SubmissionSummary[]>;
 }
 
+function filterMockSubmissions(params: { tech?: string; search?: string }) {
+  return mockSubmissions.filter((s) => {
+    const matchesTech = !params.tech || s.techTags.includes(params.tech.toLowerCase());
+    const matchesSearch =
+      !params.search ||
+      s.title.toLowerCase().includes(params.search.toLowerCase()) ||
+      s.description.toLowerCase().includes(params.search.toLowerCase());
+    return matchesTech && matchesSearch;
+  });
+}
+
 export default async function Home({
   searchParams,
   }: { 
     searchParams: Promise<{tech?: string; search?: string}> 
   }) {
   const params = await searchParams;
-  const submissions = await getSubmissions(params);
+  // const submissions = await getSubmissions(params);
+  const submissions = filterMockSubmissions(params);
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
@@ -68,23 +85,35 @@ export default async function Home({
         )}
         {submissions.map((s) => (
           <Link key={s.id} href={`/submissions/${s.id}`}>
-            <Card className="transition-colors hover:border-zinc-400 dark:hover:border-zinc-600">
+            <Card className="transition-colors hover:border-primary/50 hover:shadow-soft">
               <CardHeader>
-                <CardTitle>{s.title}</CardTitle>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <UserAvatar username={s.user.username} />
+                    <span className="text-sm font-medium text-foreground">{s.user.username}</span>
+                    <span className="text-xs text-muted-foreground">· {formatRelativeTime(s.createdAt)}</span>
+                  </div>
+                  <StatusBadge status={s.status} />
+                </div>
+                <CardTitle className="mt-2">{s.title}</CardTitle>
                 <CardDescription>{s.description}</CardDescription>
               </CardHeader>
-              <CardFooter className="flex flex-wrap gap-2 text-xs text-zinc-500">
-                <span>{s.status}</span>
-                <span>{s._count.criteria} criteria</span>
-                <span>{s._count.reviews} reviews</span>
-                {s.techTags.map((t) => (
-                  <span
-                    key={t}
-                    className="rounded-md bg-white/5 px-2 py-0.5 text-muted-foreground"
-                  >
-                    {t}
-                  </span>
-                ))}
+              <CardFooter className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <ListChecks className="size-3.5" />
+                  {s._count.criteria} criteria
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <MessageSquare className="size-3.5" />
+                  {s._count.reviews} review${s._count.reviews} review${s._count.reviews === 1 ? "" : "s"}
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {s.techTags.map((t) => (
+                    <span key={t} className="rounded-md bg-white/5 px-2 py-0.5">
+                      {t}
+                    </span>
+                  ))}
+                </div>
               </CardFooter>
             </Card>
           </Link>
