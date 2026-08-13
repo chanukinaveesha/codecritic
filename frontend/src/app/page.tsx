@@ -16,7 +16,7 @@ async function getSubmissions(params: {tech?: string; search?: string}) {
   if(params.tech) query.set("tech", params.tech);
   if(params.search) query.set("search", params.search);
 
-  const res = await fetch(`${BACKEND_URL}/submissions/feed?${query.toString()}`, {
+  const res = await fetch(`${BACKEND_URL}/submissions?${query.toString()}`, {
     cache: "no-store",
   });
   if (!res.ok) {

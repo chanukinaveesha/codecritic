@@ -29,7 +29,7 @@ export default function RootLayout({
         lang="en"
         className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
       >
-        <body className="min-h-full flex flex-col">
+        <body className="dark min-h-full flex flex-col">
           <header className="flex items-center justify-end gap-4 border-b border-zinc-200 p-4 dark:border-zinc-800">
             <Show
               when="signed-in"

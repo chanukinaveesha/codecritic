@@ -67,7 +67,7 @@ const feedQuerySchema = z.object({
     search: z.string().trim().min(1).optional(),
 })
 
-submissionRouter.get("/feed", async (req, res) => {
+submissionRouter.get("/", async (req, res) => {
     const parsedQuery = feedQuerySchema.safeParse(req.query);
 
     if (!parsedQuery.success) {
@@ -86,6 +86,7 @@ submissionRouter.get("/feed", async (req, res) => {
         },
         orderBy: { createdAt: "desc" },
         include:{
+            user: { select: { id: true, username: true } },
             _count:{select:{criteria:true, reviews:true}},
         }
     });
@@ -104,6 +105,7 @@ submissionRouter.get("/:id", async (req, res) => {
     const submission = await prisma.submission.findUnique({
         where: { id: parsedId.data },
         include: {
+            user: { select: { id: true, username: true } },
             criteria:{orderBy:{order:"asc"}},
             reviews: {
                 orderBy: { createdAt: "desc" },
