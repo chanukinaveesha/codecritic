@@ -49,3 +49,14 @@ export interface SubmissionDetail extends SubmissionBase{
     reviews: Review[];
     criteria: ReviewCriteria[];
 } 
+
+export interface UserProfile {
+  username: string;
+  bio: string | null;
+  techStack: string[];
+  githubLink: string | null;
+  karma: number;
+  createdAt: string;
+  submissionsCount: number;
+  reviewsGivenCount: number;
+}
