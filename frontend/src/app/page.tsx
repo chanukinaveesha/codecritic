@@ -25,7 +25,8 @@ async function getSubmissions(params: {tech?: string; search?: string}) {
     cache: "no-store",
   });
   if (!res.ok) {
-    throw new Error("Failed to fetch submissions");
+    // throw new Error("Failed to fetch submissions");
+    return res.json() as Promise<SubmissionSummary[]>;
   }
   return res.json() as Promise<SubmissionSummary[]>;
 }
