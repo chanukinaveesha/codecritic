@@ -10,6 +10,9 @@ export default function ReviewPage() {
 
   const [criteria, setCriteria] = useState<ReviewCriteria[]>([]);
   const [ratings, setRatings] = useState<Record<number, number>>({});
+  const [strengths, setStrengths] = useState("");
+  const [improvements, setImprovements] = useState("");
+  const [resourceLinks, setResourceLinks] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -57,6 +60,46 @@ export default function ReviewPage() {
             />
           </div>
         ))}
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="strengths" className="text-sm font-medium">
+          Strengths
+        </label>
+        <textarea
+          id="strengths"
+          required
+          rows={3}
+          value={strengths}
+          onChange={(e) => setStrengths(e.target.value)}
+          placeholder="What did they do well?"
+          className="rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="improvements" className="text-sm font-medium">
+          Improvements
+        </label>
+        <textarea
+          id="improvements"
+          required
+          rows={3}
+          value={improvements}
+          onChange={(e) => setImprovements(e.target.value)}
+          placeholder="What could be better?"
+          className="rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="resourceLinks" className="text-sm font-medium">
+          Resource links (optional)
+        </label>
+        <input
+          id="resourceLinks"
+          value={resourceLinks}
+          onChange={(e) => setResourceLinks(e.target.value)}
+          placeholder="https://example.com, https://another-example.com"
+          className="rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+        />
       </div>
     </div>
   );
