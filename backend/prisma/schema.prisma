@@ -25,79 +25,76 @@ enum SubmissionStatus {
 // -----------------------------
 
 model User {
-  id         Int      @id @default(autoincrement())
-  clerkId    String   @unique
-  username   String   @unique
-  bio        String?
-  techStack  String[]
-  githubLink String?
-  karma      Int      @default(0)
-  createdAt  DateTime @default(now())
-
-  // Relations
-  submissions Submission[] // submissions this user has posted
-  reviews     Review[]     // reviews this user has written (as reviewer)
+  id          Int          @id @default(autoincrement())
+  clerkId     String       @unique
+  username    String       @unique
+  bio         String?
+  techStack   String[]
+  githubLink  String?
+  karma       Int          @default(0)
+  createdAt   DateTime     @default(now())
+  reviews     Review[]
+  submissions Submission[]
 }
 
 model Submission {
-  id          Int              @id @default(autoincrement())
-  userId      Int
-  title       String
-  description String
-  githubUrl   String
-  techTags    String[]
-  status      SubmissionStatus @default(Pending)
-  createdAt   DateTime         @default(now())
-
-  // Relations
-  user     User             @relation(fields: [userId], references: [id])
-  criteria ReviewCriteria[] // 1 to 5 criteria defined by the submitter
-  reviews  Review[]         // reviews received on this submission
+  id           Int              @id @default(autoincrement())
+  userId       Int
+  title        String
+  description  String
+  githubUrl    String
+  techTags     String[]
+  status       SubmissionStatus @default(Pending)
+  createdAt    DateTime         @default(now())
+  codeLanguage String?
+  codeSnippet  String?
+  reviews      Review[]
+  criteria     ReviewCriteria[]
+  user         User             @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
 
 model ReviewCriteria {
-  id           Int    @id @default(autoincrement())
+  id           Int              @id @default(autoincrement())
   submissionId Int
   label        String
   order        Int?
-
-  // Relations
-  submission Submission       @relation(fields: [submissionId], references: [id])
-  ratings    CriteriaRating[] // ratings given against this criterion across reviews
+  ratings      CriteriaRating[]
+  submission   Submission       @relation(fields: [submissionId], references: [id])
 
   @@index([submissionId])
 }
 
 model Review {
-  id            Int      @id @default(autoincrement())
+  id            Int              @id @default(autoincrement())
   submissionId  Int
   reviewerId    Int
   strengths     String
   improvements  String
   resourceLinks String[]
-  createdAt     DateTime @default(now())
-
-  // Relations
-  submission Submission       @relation(fields: [submissionId], references: [id])
-  reviewer   User             @relation(fields: [reviewerId], references: [id])
-  ratings    CriteriaRating[] // one rating per criterion defined on the submission
+  createdAt     DateTime         @default(now())
+  ratings       CriteriaRating[]
+  reviewer      User             @relation(fields: [reviewerId], references: [id])
+  submission    Submission       @relation(fields: [submissionId], references: [id])
 
   @@index([submissionId])
   @@index([reviewerId])
 }
 
 model CriteriaRating {
-  id         Int @id @default(autoincrement())
+  id         Int            @id @default(autoincrement())
   reviewId   Int
   criteriaId Int
-  rating     Int // expected range 1-10, enforce in application/API layer
-
-  // Relations
-  review   Review         @relation(fields: [reviewId], references: [id])
-  criteria ReviewCriteria @relation(fields: [criteriaId], references: [id])
+  rating     Int
+  criteria   ReviewCriteria @relation(fields: [criteriaId], references: [id])
+  review     Review         @relation(fields: [reviewId], references: [id])
 
   @@index([reviewId])
   @@index([criteriaId])
+}
+
+enum SubmissionStatus {
+  Pending
+  Reviewed
 }

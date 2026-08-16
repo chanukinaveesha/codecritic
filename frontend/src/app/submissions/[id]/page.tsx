@@ -6,7 +6,6 @@ import { SubmissionDetail } from "@/lib/types";
 import { ListChecks, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { FaGithub } from "react-icons/fa";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -69,7 +68,6 @@ export default async function SubmissionDetailPage({
           rel="noreferrer"
           className="mt-3 inline-flex items-center gap-1.5 text-sm text-primary underline-offset-4 hover:underline"
         >
-          <FaGithub className="size-4" />
           View on GitHub
         </a>
       </div>
