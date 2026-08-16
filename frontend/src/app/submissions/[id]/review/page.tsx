@@ -9,6 +9,7 @@ export default function ReviewPage() {
   const submissionId = params.id as string;
 
   const [criteria, setCriteria] = useState<ReviewCriteria[]>([]);
+  const [ratings, setRatings] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,6 +19,12 @@ export default function ReviewPage() {
       );
       const data = await res.json();
       setCriteria(data);
+
+      const startingRatings: Record<number, number> = {};
+      for (const c of data) {
+        startingRatings[c.id] = 5;
+      }
+      setRatings(startingRatings);
       setLoading(false);
     }
 
@@ -28,14 +35,26 @@ export default function ReviewPage() {
     return <p className="p-8 text-sm text-muted-foreground">Loading...</p>;
   }
 
+  function updateRating(criteriaId: number, value: string) {
+    setRatings((prev) => ({ ...prev, [criteriaId]: Number(value) }));
+  }
+
   return (
     <div className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-4 p-8">
       <h1 className="text-2xl font-semibold">Review this submission</h1>
       <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium">Criteria to rate</span>
+        <span className="text-sm font-medium">Rate each criteria (1 to 10)</span>
         {criteria.map((c) => (
-          <div key={c.id} className="text-sm">
-            {c.label}
+          <div key={c.id} className="flex items-center justify-between gap-2">
+            <span className="text-sm">{c.label}</span>
+            <input
+              type="number"
+              min={1}
+              max={10}
+              value={ratings[c.id] ?? 5}
+              onChange={(e) => updateRating(c.id, e.target.value)}
+              className="w-16 rounded-md border border-input bg-transparent px-2 py-1 text-sm"
+            />
           </div>
         ))}
       </div>
