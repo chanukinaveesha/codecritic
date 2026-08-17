@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 
 if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
@@ -13,13 +13,11 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export function SyncUser() {
   const { isLoaded, isSignedIn, userId, getToken } = useAuth();
-  const syncedForUserId = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!isLoaded || !isSignedIn || syncedForUserId.current === userId) {
+    if (!isLoaded || !isSignedIn) {
       return;
     }
-    syncedForUserId.current = userId;
 
     (async () => {
       const token = await getToken();
@@ -28,10 +26,8 @@ export function SyncUser() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }).catch(() => {
-        syncedForUserId.current = null;
       });
-    })();
+    })().catch(() => {});
   }, [isLoaded, isSignedIn, userId, getToken]);
 
   return null;
