@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ClerkProvider, Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import type { Metadata } from "next";
+import { Nav } from "@/components/nav";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
@@ -33,50 +34,43 @@ export default function RootLayout({
       >
        
        <body className="min-h-full">
-        <div className="flex min-h-screen flex-col">
-          <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-6">
-            <Link href="/" className="text-lg font-semibold text-foreground">
-              CodeCritic
-            </Link>
+        <div className="flex min-h-screen">
+          <aside className="w-56 shrink-0 border-r border-sidebar-border bg-sidebar px-4 py-6">
+            <Nav />
+          </aside>
 
-            <div className="flex items-center gap-3">
-              <Button asChild size="sm">
-                <Link href="/submissions/new">New submission</Link>
-              </Button>
+          <div className="flex flex-1 flex-col">
+            <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-6">
+              <Link href="/" className="text-lg font-semibold text-foreground">
+                CodeCritic
+              </Link>
 
-              <Show
-                when="signed-in"
-                fallback={
-                  <div className="flex gap-2">
-                    <SignInButton mode="modal">
-                      <Button variant="ghost" size="sm">
-                        Sign in
-                      </Button>
-                    </SignInButton>
-                    <SignUpButton mode="modal">
-                      <Button size="sm">Sign up</Button>
-                    </SignUpButton>
-                  </div>
-                }
-              >
-                <UserButton />
-              </Show>
-            </div>
-          </header>
+              <div className="flex items-center gap-3">
+                <Button asChild size="sm">
+                  <Link href="/submissions/new">New submission</Link>
+                </Button>
 
-          <div className="grid flex-1 grid-cols-[220px_1fr]">
-            <aside className="border-r border-sidebar-border bg-sidebar px-4 py-6">
-              <nav className="flex flex-col gap-1">
-                <Link
-                  href="/"
-                  className="rounded-md px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent"
+                <Show
+                  when="signed-in"
+                  fallback={
+                    <div className="flex gap-2">
+                      <SignInButton mode="modal">
+                        <Button variant="ghost" size="sm">
+                          Sign in
+                        </Button>
+                      </SignInButton>
+                      <SignUpButton mode="modal">
+                        <Button size="sm">Sign up</Button>
+                      </SignUpButton>
+                    </div>
+                  }
                 >
-                  Feed
-                </Link>
-              </nav>
-            </aside>
+                  <UserButton />
+                </Show>
+              </div>
+            </header>
 
-            <main className="flex flex-col">{children}</main>
+            <main className="flex flex-1 flex-col">{children}</main>
           </div>
         </div>
       </body>

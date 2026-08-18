@@ -11,6 +11,8 @@ export interface SubmissionBase{
     description:string
     githubUrl: string;
     techTags: string[];
+    codeSnippet?: string;
+    codeLanguage?: string;
     status: "Pending" | "Reviewed";
     createdAt: string;
 }

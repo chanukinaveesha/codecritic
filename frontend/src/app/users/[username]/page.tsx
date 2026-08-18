@@ -1,7 +1,9 @@
 import { UserProfile } from "@/lib/types";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { FaGithub } from "react-icons/fa";
+import { UserAvatar } from "@/components/user-avatar";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -32,44 +34,62 @@ export default async function UserProfilePage({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>{profile.username}</CardTitle>
-          {profile.bio && <CardDescription>{profile.bio}</CardDescription>}
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div className="flex flex-wrap gap-2 text-xs text-zinc-500">
-            {profile.techStack.map((tech) => (
-              <span key={tech} className="rounded bg-zinc-100 px-2 py-0.5 dark:bg-zinc-800">
-                {tech}
-              </span>
-            ))}
-          </div>
+     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
+      <div className="flex items-center gap-4">
+        <UserAvatar username={profile.username} size="md" />
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground">{profile.username}</h1>
+          {profile.bio && <p className="text-sm text-muted-foreground">{profile.bio}</p>}
+        </div>
+      </div>
 
-          {profile.githubLink && (
-            <a
-        
-              href={profile.githubLink}
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm text-blue-600 underline dark:text-blue-400"
-            >
-              GitHub
-            </a>
-          )}
+      <div className="grid grid-cols-3 gap-3">
+        <Card size="sm" className="items-center text-center">
+          <CardContent className="flex flex-col items-center py-2">
+            <span className="text-2xl font-semibold text-foreground">{profile.karma}</span>
+            <span className="text-xs text-muted-foreground">Karma</span>
+          </CardContent>
+        </Card>
+        <Card size="sm" className="items-center text-center">
+          <CardContent className="flex flex-col items-center py-2">
+            <span className="text-2xl font-semibold text-foreground">{profile.submissionsCount}</span>
+            <span className="text-xs text-muted-foreground">Submissions</span>
+          </CardContent>
+        </Card>
+        <Card size="sm" className="items-center text-center">
+          <CardContent className="flex flex-col items-center py-2">
+            <span className="text-2xl font-semibold text-foreground">{profile.reviewsGivenCount}</span>
+            <span className="text-xs text-muted-foreground">Reviews Given</span>
+          </CardContent>
+        </Card>
+      </div>
 
-          <div className="flex gap-6 text-sm">
-            <span><span className="font-medium">{profile.karma}</span> karma</span>
-            <span><span className="font-medium">{profile.submissionsCount}</span> submissions</span>
-            <span><span className="font-medium">{profile.reviewsGivenCount}</span> reviews given</span>
-          </div>
-        </CardContent>
-      </Card>
+      {profile.techStack.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {profile.techStack.map((tech) => (
+            <span key={tech} className="rounded-md bg-white/5 px-2 py-0.5 text-xs text-muted-foreground">
+              {tech}
+            </span>
+          ))}
+        </div>
+      )}
 
-      <Link href="/" className="text-sm text-zinc-500 underline">
+      {profile.githubLink && (
+        <a
+          href={profile.githubLink}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex w-fit items-center gap-1.5 text-sm text-primary underline-offset-4 hover:underline"
+        >
+          <FaGithub className="size-4" />
+          GitHub
+        </a>
+      )}
+
+      <Link href="/" className="text-sm text-muted-foreground underline-offset-4 hover:underline">
         ← Back to feed
       </Link>
     </div>
+    
   );
 }

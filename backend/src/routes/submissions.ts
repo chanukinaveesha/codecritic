@@ -10,6 +10,8 @@ const createSubmissionSchema = z.object({
   description: z.string().min(1),
   githubUrl: z.string().url(),
   techTags: z.array(z.string().trim().toLowerCase()).default([]),
+  codeSnippet: z.string().trim().max(20000).optional(),
+  codeLanguage: z.string().trim().toLowerCase().optional(),
   criteria: z
     .array(z.object({ label: z.string().min(1) }))
     .min(1)
@@ -47,6 +49,8 @@ submissionRouter.post("/", async (req, res) => {
             description: parsedData.data.description,
             githubUrl: parsedData.data.githubUrl,
             techTags: parsedData.data.techTags,
+            codeSnippet: parsedData.data.codeSnippet,
+            codeLanguage: parsedData.data.codeLanguage,
             criteria: {
                 create: parsedData.data.criteria.map((c, index) => ({
                     label: c.label,
@@ -84,7 +88,7 @@ submissionRouter.get("/", async (req, res) => {
                 { title: { contains: search, mode: "insensitive" } },
                 { description: { contains: search, mode: "insensitive" } },
             ] } : {}),
-            ...(username ? { user: { username } } : {}),
+            ...(username ? { user: { username: { equals: username, mode: "insensitive" } } } : {}),
         },
         orderBy: { createdAt: "desc" },
         include:{

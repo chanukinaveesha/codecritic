@@ -6,7 +6,7 @@ import { Review, SubmissionSummary } from "@/lib/types";
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 async function getMySubmissions(username: string): Promise<SubmissionSummary[]> {
-  const res = await fetch(`${BACKEND_URL}/submissions/feed?username=${username}`, {
+  const res = await fetch(`${BACKEND_URL}/submissions?username=${username}`, {
     cache: "no-store",
   });
   if (!res.ok) return [];
