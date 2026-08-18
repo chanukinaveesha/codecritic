@@ -88,7 +88,7 @@ submissionRouter.get("/", async (req, res) => {
                 { title: { contains: search, mode: "insensitive" } },
                 { description: { contains: search, mode: "insensitive" } },
             ] } : {}),
-            ...(username ? { user: { username } } : {}),
+            ...(username ? { user: { username: { equals: username, mode: "insensitive" } } } : {}),
         },
         orderBy: { createdAt: "desc" },
         include:{

@@ -18,10 +18,11 @@ usersRouter.post("/sync", async (req, res) => {
     clerkUser.emailAddresses.find((e) => e.id === clerkUser.primaryEmailAddressId)
       ?.emailAddress ?? clerkUser.emailAddresses[0]?.emailAddress;
 
-  const username =
+  const username = (
     clerkUser.username ??
     primaryEmail?.split("@")[0] ??
-    `user_${clerkUser.id.slice(-8)}`;
+    `user_${clerkUser.id.slice(-8)}`
+  ).toLowerCase();
 
   const user = await prisma.user.upsert({
     where: { clerkId: clerkUser.id },
@@ -38,9 +39,9 @@ usersRouter.post("/sync", async (req, res) => {
 usersRouter.get("/:username", async (req, res) => {
   const { username } = req.params;
 
-  const user = await prisma.user.findUnique({
-    where: { username },
-    select:{ 
+  const user = await prisma.user.findFirst({
+    where: { username: { equals: username, mode: "insensitive" } },
+    select:{
       username: true, 
       bio: true,
       techStack: true,
