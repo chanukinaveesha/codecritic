@@ -19,8 +19,7 @@ const createSubmissionSchema = z.object({
 }
 );
 
-submissionRouter.post("/", async (req, res) => {
-    const {userId} = getAuth(req);
+async function validateUser(userId:string | null, res: any){
     if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
     }
@@ -35,6 +34,14 @@ submissionRouter.post("/", async (req, res) => {
     if (!user) {
         return res.status(404).json({ error: "User not found" });
     }
+
+    return user;
+}
+
+submissionRouter.post("/", async (req, res) => {
+    const {userId} = getAuth(req);
+    
+    const user = await validateUser(userId, res);
 
     const parsedData = createSubmissionSchema.safeParse(req.body);
 
@@ -99,6 +106,48 @@ submissionRouter.get("/", async (req, res) => {
     res.status(200).json(submissions);
 });
 
+submissionRouter.get("/feed", async (req, res) => {
+    const userId = getAuth(req).userId;
+
+    const user = await validateUser(userId,res);
+    if(!user){
+        return;
+    }
+
+    const parsedQuery = feedQuerySchema.safeParse(req.query);
+    if (!parsedQuery.success) {
+        return res.status(400).json({ error: parsedQuery.error.flatten() });
+    }
+
+    const { tech, search} = parsedQuery.data;
+
+    const submissions = await prisma.submission.findMany({
+        where:{
+            ...(tech ? { techTags: { has: tech } } : {}),
+            ...(search ? { OR: [
+                { title: { contains: search, mode: "insensitive" } },
+                { description: { contains: search, mode: "insensitive" } },
+            ] } : {}),
+            userId:{not:user.id},
+        },
+        orderBy: { createdAt: "desc" },
+        include:{
+            user: { select: { id: true, username: true } },
+            _count:{select:{criteria:true, reviews:true}},
+        }
+    });
+
+    const stack = new Set(user.techStack.map((tag: string) => tag.toLowerCase()));
+
+    const rankedSubmissions = submissions.map((s) => ({submissions:s, matchesStack: s.techTags.some((tag) => stack.has(tag.toLowerCase()))}))
+    .sort((a, b) => {
+        if (a.matchesStack !== b.matchesStack) return a.matchesStack ? -1 : 1;
+        if (a.submissions._count.reviews !== b.submissions._count.reviews) return b.submissions._count.reviews - a.submissions._count.reviews;
+        return b.submissions.createdAt.getTime() - a.submissions.createdAt.getTime();
+    }).map((s) => s.submissions);
+    res.status(200).json(rankedSubmissions);
+})
+
 const idParamSchema = z.coerce.number().int().positive();
 
 submissionRouter.get("/:id", async (req, res) => {
@@ -129,3 +178,4 @@ submissionRouter.get("/:id", async (req, res) => {
 
     res.status(200).json(submission);
 });
+
