@@ -113,7 +113,7 @@ export default async function Home({
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <MessageSquare className="size-3.5" />
-                  {s._count.reviews} review {s._count.reviews === 1 ? "" : "s"}
+                  {s._count.reviews} review{s._count.reviews === 1 ? "" : "s"}
                 </span>
                 <div className="flex flex-wrap gap-2">
                   {s.techTags.map((t) => (
