@@ -20,7 +20,7 @@ export default function ReviewPage() {
   const [strengths, setStrengths] = useState("");
   const [improvements, setImprovements] = useState("");
   const [resourceLinks, setResourceLinks] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

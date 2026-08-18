@@ -1,7 +1,6 @@
 import { StatusBadge } from "@/components/status-badge";
 import { UserAvatar } from "@/components/user-avatar";
 import { formatRelativeTime } from "@/lib/format";
-import { mockSubmissionDetails } from "@/lib/mock-data";
 import { SubmissionDetail } from "@/lib/types";
 import { ListChecks, MessageSquare } from "lucide-react";
 import Link from "next/link";
@@ -29,8 +28,7 @@ export default async function SubmissionDetailPage({
     params: Promise<{id: string}>
 }) {
     const {id} = await params;
-    // const submission = await getSubmission(id);
-    const submission = mockSubmissionDetails[Number(id)];
+    const submission = await getSubmission(id);
 
     if(!submission) {
         notFound();

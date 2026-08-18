@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { UserAvatar } from "@/components/user-avatar";
 import { formatRelativeTime } from "@/lib/format";
-import { mockSubmissions } from "@/lib/mock-data";
 import { SubmissionSummary } from "@/lib/types";
 import { ListChecks, MessageSquare } from "lucide-react";
 import Link from "next/link";
@@ -31,16 +30,7 @@ async function getSubmissions(params: {tech?: string; search?: string}) {
   return res.json() as Promise<SubmissionSummary[]>;
 }
 
-function filterMockSubmissions(params: { tech?: string; search?: string }) {
-  return mockSubmissions.filter((s) => {
-    const matchesTech = !params.tech || s.techTags.includes(params.tech.toLowerCase());
-    const matchesSearch =
-      !params.search ||
-      s.title.toLowerCase().includes(params.search.toLowerCase()) ||
-      s.description.toLowerCase().includes(params.search.toLowerCase());
-    return matchesTech && matchesSearch;
-  });
-}
+
 
 export default async function Home({
   searchParams,
@@ -48,8 +38,7 @@ export default async function Home({
     searchParams: Promise<{tech?: string; search?: string}> 
   }) {
   const params = await searchParams;
-  // const submissions = await getSubmissions(params);
-  const submissions = filterMockSubmissions(params);
+  const submissions = await getSubmissions(params);
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
