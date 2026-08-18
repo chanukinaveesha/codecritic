@@ -10,6 +10,8 @@ const createSubmissionSchema = z.object({
   description: z.string().min(1),
   githubUrl: z.string().url(),
   techTags: z.array(z.string().trim().toLowerCase()).default([]),
+  codeSnippet: z.string().trim().max(20000).optional(),
+  codeLanguage: z.string().trim().toLowerCase().optional(),
   criteria: z
     .array(z.object({ label: z.string().min(1) }))
     .min(1)
@@ -47,6 +49,8 @@ submissionRouter.post("/", async (req, res) => {
             description: parsedData.data.description,
             githubUrl: parsedData.data.githubUrl,
             techTags: parsedData.data.techTags,
+            codeSnippet: parsedData.data.codeSnippet,
+            codeLanguage: parsedData.data.codeLanguage,
             criteria: {
                 create: parsedData.data.criteria.map((c, index) => ({
                     label: c.label,
@@ -65,6 +69,7 @@ submissionRouter.post("/", async (req, res) => {
 const feedQuerySchema = z.object({
     tech: z.string().trim().toLowerCase().min(1).optional(),
     search: z.string().trim().min(1).optional(),
+    username: z.string().trim().min(1).optional(),
 })
 
 submissionRouter.get("/", async (req, res) => {
@@ -74,7 +79,7 @@ submissionRouter.get("/", async (req, res) => {
         return res.status(400).json({ error: parsedQuery.error.flatten() });
     }
     
-    const { tech, search } = parsedQuery.data;
+    const { tech, search, username } = parsedQuery.data;
 
     const submissions = await prisma.submission.findMany({
         where:{
@@ -83,6 +88,7 @@ submissionRouter.get("/", async (req, res) => {
                 { title: { contains: search, mode: "insensitive" } },
                 { description: { contains: search, mode: "insensitive" } },
             ] } : {}),
+            ...(username ? { user: { username } } : {}),
         },
         orderBy: { createdAt: "desc" },
         include:{
