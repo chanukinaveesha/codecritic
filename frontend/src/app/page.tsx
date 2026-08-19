@@ -11,6 +11,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { formatRelativeTime } from "@/lib/format";
 import { mockSubmissions } from "@/lib/mock-data";
 import { SubmissionSummary } from "@/lib/types";
+import { auth } from "@clerk/nextjs/server";
 import { ListChecks, MessageSquare } from "lucide-react";
 import Link from "next/link";
 
@@ -18,15 +19,22 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 async function getSubmissions(params: {tech?: string; search?: string}) {
   const query = new URLSearchParams();
-  if(params.tech) query.set("tech", params.tech);
-  if(params.search) query.set("search", params.search);
+  if (params.tech) query.set("tech", params.tech);
+  if (params.search) query.set("search", params.search);
 
-  const res = await fetch(`${BACKEND_URL}/submissions?${query.toString()}`, {
+  const { userId, getToken } = await auth();
+  const token = userId ? await getToken() : null;
+
+  const res = await fetch(`${BACKEND_URL}/submissions/feed?${query.toString()}`, {
     cache: "no-store",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
+
   if (!res.ok) {
-    throw new Error("Failed to fetch submissions");
+    console.log(res.status, await res.text());
+    return [];
   }
+
   return res.json() as Promise<SubmissionSummary[]>;
 }
 
@@ -47,8 +55,8 @@ export default async function Home({
     searchParams: Promise<{tech?: string; search?: string}> 
   }) {
   const params = await searchParams;
-  // const submissions = await getSubmissions(params);
-  const submissions = filterMockSubmissions(params);
+  const submissions = await getSubmissions(params);
+  // const submissions = filterMockSubmissions(params);
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
@@ -65,14 +73,14 @@ export default async function Home({
           name="search"
           defaultValue={params.search ?? ""}
           placeholder="Search title or description"
-          className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          className="flex-1 rounded-md border border-input bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
         />
         <input
           type="text"
           name="tech"
           defaultValue={params.tech ?? ""}
           placeholder="Filter by tech tag"
-          className="w-48 rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          className="w-48 rounded-md border border-input bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
         />
         <Button type="submit" variant="outline">
           Filter
@@ -105,7 +113,7 @@ export default async function Home({
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <MessageSquare className="size-3.5" />
-                  {s._count.reviews} review${s._count.reviews} review${s._count.reviews === 1 ? "" : "s"}
+                  {s._count.reviews} review{s._count.reviews === 1 ? "" : "s"}
                 </span>
                 <div className="flex flex-wrap gap-2">
                   {s.techTags.map((t) => (
