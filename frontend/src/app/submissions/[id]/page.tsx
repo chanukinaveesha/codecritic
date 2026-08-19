@@ -1,7 +1,6 @@
 import { StatusBadge } from "@/components/status-badge";
 import { UserAvatar } from "@/components/user-avatar";
 import { formatRelativeTime } from "@/lib/format";
-import { mockSubmissionDetails } from "@/lib/mock-data";
 import { SubmissionDetail } from "@/lib/types";
 import { Code2, ListChecks, MessageSquare } from "lucide-react";
 import Link from "next/link";
@@ -40,16 +39,16 @@ export default async function SubmissionDetailPage({
     params: Promise<{id: string}>
 }) {
     const {id} = await params;
-    // const submission = await getSubmission(id);
-    const submission = mockSubmissionDetails[Number(id)];
+    const submission = await getSubmission(id);
+
+    if(!submission) {
+        notFound();
+    }
 
     const codeHtml = submission.codeSnippet
         ? await highlightCodeSnippet(submission.codeSnippet, submission.codeLanguage || "text")
         : null;    
 
-    if(!submission) {
-        notFound();
-    }
 
     return (
     <>
@@ -83,7 +82,7 @@ export default async function SubmissionDetailPage({
           rel="noreferrer"
           className="mt-3 inline-flex items-center gap-1.5 text-sm text-primary underline-offset-4 hover:underline"
         >
-          <FaGithub className="size-4" />
+        <FaGithub className="size-4" />
           View on GitHub
         </a>
       </div>
