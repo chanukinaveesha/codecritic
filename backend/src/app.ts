@@ -3,6 +3,7 @@ import cors from "cors";
 import express, { Application } from "express";
 import { submissionRouter } from "./routes/submissions";
 import { usersRouter } from "./routes/users";
+import { reviewRouter } from "./routes/reviews";
 
 export function createApp(): Application {
   const app = express();
@@ -17,6 +18,6 @@ export function createApp(): Application {
 
   app.use("/users", usersRouter);
   app.use("/submissions", submissionRouter);
-
+  app.use("/submissions", reviewRouter);
   return app;
 }

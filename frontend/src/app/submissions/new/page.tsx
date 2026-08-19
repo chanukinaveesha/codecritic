@@ -1,5 +1,6 @@
 "use client";
 
+import { CodeEditor } from "@/components/code-editor";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -18,6 +19,9 @@ export default function NewSubmissionPage(){
     const [criteria, setCriteria] = useState([""]);
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [codeSnippet, setCodeSnippet] = useState("");
+    const [codeLanguage, setCodeLanguage] = useState("");
 
     function updateCriterion(index: number, value: string) {
     setCriteria((prev) => prev.map((c, i) => (i === index ? value : c)));
@@ -43,6 +47,8 @@ export default function NewSubmissionPage(){
         description,
         githubUrl,
         techTags: techTags.split(",").map((t) => t.trim()).filter(Boolean),
+        codeSnippet: codeSnippet.trim() || undefined,
+        codeLanguage: codeLanguage || undefined,
         criteria: criteria.map((label) => label.trim()).filter(Boolean).map((label)=>({label})),
     };
 
@@ -121,6 +127,36 @@ export default function NewSubmissionPage(){
             className="rounded-md border border-input px-3 py-2 text-sm bg-transparent"
           />
         </div>
+
+        <div className="flex flex-col gap-1">
+            <label htmlFor="codeLanguage" className="text-sm font-medium">
+                Code language (optional)
+            </label>
+            <select
+                id="codeLanguage"
+                value={codeLanguage}
+                onChange={(e) => setCodeLanguage(e.target.value)}
+                className="rounded-md border border-input bg-transparent px-3 py-2 text-sm text-foreground"
+            >
+                <option value="">None</option>
+                <option value="javascript">JavaScript</option>
+                <option value="typescript">TypeScript</option>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="go">Go</option>
+                <option value="rust">Rust</option>
+                <option value="html">HTML</option>
+                <option value="css">CSS</option>
+                <option value="sql">SQL</option>
+                <option value="bash">Bash</option>
+                <option value="json">JSON</option>
+            </select>
+            </div>
+            
+            <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium">Code snippet (optional)</label>
+                <CodeEditor value={codeSnippet} onChange={setCodeSnippet} language={codeLanguage} />
+            </div>
 
         <div className="flex flex-col gap-2">
           <span className="text-sm font-medium">Review criteria (1–5)</span>

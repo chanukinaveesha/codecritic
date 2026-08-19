@@ -2,9 +2,11 @@ import { StatusBadge } from "@/components/status-badge";
 import { UserAvatar } from "@/components/user-avatar";
 import { formatRelativeTime } from "@/lib/format";
 import { SubmissionDetail } from "@/lib/types";
-import { ListChecks, MessageSquare } from "lucide-react";
+import { Code2, ListChecks, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { FaGithub } from "react-icons/fa";
+import { codeToHtml } from "shiki";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -22,6 +24,15 @@ async function getSubmission(id: string): Promise<SubmissionDetail | null> {
     return res.json();
 }
 
+async function highlightCodeSnippet(code: string, language: string): Promise<string | null> {
+    try{
+        return await codeToHtml(code, { lang: language || "text", theme: "nord" });
+    } catch (error) {
+        console.error("Error highlighting code snippet:", error);
+        return null;
+    }
+}
+
 export default async function SubmissionDetailPage({
     params,
 }:{
@@ -29,6 +40,10 @@ export default async function SubmissionDetailPage({
 }) {
     const {id} = await params;
     const submission = await getSubmission(id);
+
+    const codeHtml = submission.codeSnippet
+        ? await highlightCodeSnippet(submission.codeSnippet, submission.codeLanguage || "text")
+        : null;    
 
     if(!submission) {
         notFound();
@@ -69,6 +84,25 @@ export default async function SubmissionDetailPage({
           View on GitHub
         </a>
       </div>
+
+      {submission.codeSnippet && (
+        <section>
+            <h2 className="flex items-center gap-1.5 text-lg font-semibold text-foreground">
+            <Code2 className="size-4" />
+            Code snippet
+            </h2>
+            {codeHtml ? (
+            <div
+                className="mt-2 overflow-x-auto rounded-md border border-border text-sm [&_pre]:p-4"
+                dangerouslySetInnerHTML={{ __html: codeHtml }}
+            />
+            ) : (
+            <pre className="mt-2 overflow-x-auto rounded-md border border-border bg-card p-4 text-sm text-foreground">
+                <code>{submission.codeSnippet}</code>
+            </pre>
+            )}
+        </section>
+        )}
 
       <section>
         <h2 className="flex items-center gap-1.5 text-lg font-semibold text-foreground">
