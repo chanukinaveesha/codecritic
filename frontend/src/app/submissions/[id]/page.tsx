@@ -119,10 +119,18 @@ export default async function SubmissionDetailPage({
       </section>
 
       <section>
+        <div className="flex items-center justify-between">
         <h2 className="flex items-center gap-1.5 text-lg font-semibold text-foreground">
           <MessageSquare className="size-4" />
           Reviews ({submission.reviews.length})
         </h2>
+        <Link
+          href={`/submissions/${submission.id}/review`}
+          className="text-sm text-primary underline-offset-4 hover:underline"
+        >
+          Write a Review
+        </Link>
+        </div>
         <div className="mt-2 flex flex-col gap-4">
           {submission.reviews.length === 0 && (
             <p className="text-sm text-muted-foreground">No reviews yet.</p>
