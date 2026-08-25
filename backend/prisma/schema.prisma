@@ -28,9 +28,11 @@ model User {
   id         Int      @id @default(autoincrement())
   clerkId    String   @unique
   username   String   @unique
+  displayName String?
   bio        String?
   techStack  String[]
   githubLink String?
+  socialLinks String[]
   karma      Int      @default(0)
   createdAt  DateTime @default(now())
 
